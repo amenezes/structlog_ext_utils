@@ -6,6 +6,7 @@ isort
 black
 mypy
 tox
+codecov
 portray
 tox-asdf
 python-json-logger
