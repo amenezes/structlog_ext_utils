@@ -1,0 +1,23 @@
+[run]
+branch = True
+omit = **__init__.py**
+       **__main__.py
+       **__version__.py
+
+[report]
+show_missing = True
+sort = Cover
+precision = 2
+exclude_lines = logging.info
+                logging.debug
+                logging.warn
+                logging.error
+
+[paths]
+source = structlog_ext_utils/
+
+[html]
+directory = .
+
+[xml]
+output = coverage.xml
