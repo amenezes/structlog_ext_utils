@@ -1,34 +1,44 @@
+import pytest
+
 import structlog_ext_utils
 
 
-def test_version_appender_custom():
-    v = structlog_ext_utils.VersionAppender(number="2", key="@v")
-    assert v.key == "@v"
-    assert v.number == "2"
+@pytest.mark.parametrize("attribute", ["name"])
+def test_timestamp(attribute):
+    t = structlog_ext_utils.processors.Timestamp()
+    assert hasattr(t, attribute)
 
 
-def test_version_appender():
-    v = structlog_ext_utils.VersionAppender()
+@pytest.mark.parametrize("name", ["@timestamp", "@time"])
+def test_custom_timestamp(name):
+    t = structlog_ext_utils.processors.Timestamp(name=name)
+    event_dict = t(None, None, {})
+    assert event_dict[name] is not None
+
+
+@pytest.mark.parametrize("attribute", ["key", "number"])
+def test_version_appender(attribute):
+    v = structlog_ext_utils.processors.VersionAppender()
+    assert hasattr(v, attribute)
+
+
+@pytest.mark.parametrize("number,key", [("2", "@v"), ("1", "@version")])
+def test_custom_version_appender(number, key):
+    v = structlog_ext_utils.processors.VersionAppender(number=number, key=key)
     event_dict = v(None, None, {})
-    assert event_dict["@version"]
-    assert event_dict["@version"] == "1"
-
-
-def test_rename_field():
-    r = structlog_ext_utils.RenameField(fields={"event": "message"})
-    event_dict = r(None, None, {"event": "test message", "@version": 1})
-    assert event_dict.get("event") is None
+    assert event_dict[key]
+    assert event_dict[key] == number
 
 
 def test_application():
-    a = structlog_ext_utils.Application(name="myapp", hostname="localhost")
+    a = structlog_ext_utils.processors.Application(name="myapp", hostname="localhost")
     event_dict = a(None, None, {})
     assert event_dict["app_name"]
     assert event_dict["hostname"]
 
 
 def test_application_process_info():
-    a = structlog_ext_utils.Application(
+    a = structlog_ext_utils.processors.Application(
         name="myapp", hostname="localhost", enable_process=True
     )
     event_dict = a(None, None, {})
@@ -36,8 +46,21 @@ def test_application_process_info():
 
 
 def test_application_thread_info():
-    a = structlog_ext_utils.Application(
+    a = structlog_ext_utils.processors.Application(
         name="myapp", hostname="localhost", enable_thread=True
     )
     event_dict = a(None, None, {})
     assert event_dict["thread"]
+
+
+def test_rename_field():
+    r = structlog_ext_utils.processors.RenameField(fields={"event": "message"})
+    event_dict = r(None, None, {"event": "test message", "@version": 1})
+    assert event_dict["message"] == "test message"
+
+
+def test_rename_field_that_not_exist():
+    r = structlog_ext_utils.processors.RenameField(fields={"event": "message"})
+    event_dict = r(None, None, {"event": "test message", "@version": 1})
+    with pytest.raises(KeyError):
+        event_dict["event"]

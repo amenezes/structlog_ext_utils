@@ -27,18 +27,23 @@ setuptools.setup(
             ("Issue tracker", "https://github.com/amenezes/structlog_ext_utils/issues"),
         )
     ),
-    install_requires=["structlog", "python-json-logger"],
+    install_requires=["structlog<=20.1.0", "python-json-logger", "pendulum"],
     tests_require=[
-        "pytest==5.3.4",
-        "flake8==3.7.8",
-        "pytest-cov==2.8.1",
-        "isort==4.3.21",
-        "black==19.10b0",
-        "mypy>=0.761",
+        "pytest",
+        "flake8",
+        "pytest-cov",
+        "pytest-mock",
+        "isort",
+        "black",
+        "mypy",
+        "tox",
+        "codecov",
+        "portray",
+        "tox-asdf"
     ],
     extras_require={
-        "docs": ["portray>=1.3.1"],
-        "all": ["structlog", "python-json-logger", "portray>=1.3.1"],
+        "docs": ["portray"],
+        "all": ["structlog<=20.1.0", "python-json-logger", "portray"],
     },
     setup_requires=["setuptools>=38.6.0"],
     classifiers=[

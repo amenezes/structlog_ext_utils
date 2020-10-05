@@ -9,4 +9,7 @@ tox
 codecov
 portray
 tox-asdf
+# project dependencies
+pendulum
+structlog
 python-json-logger

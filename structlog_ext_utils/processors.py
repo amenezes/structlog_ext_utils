@@ -1,6 +1,17 @@
 from multiprocessing import current_process
 from threading import current_thread
 
+import pendulum
+
+
+class Timestamp:
+    def __init__(self, name: str = "@timestamp"):
+        self.name = name
+
+    def __call__(self, _, __, event_dict):
+        event_dict[self.name] = pendulum.now().to_rfc3339_string()
+        return event_dict
+
 
 class VersionAppender:
     def __init__(self, number: str = "1", key: str = "@version"):
@@ -14,7 +25,11 @@ class VersionAppender:
 
 class Application:
     def __init__(
-        self, name, hostname, enable_thread: bool = False, enable_process: bool = False,
+        self,
+        name,
+        hostname,
+        enable_thread: bool = False,
+        enable_process: bool = False,
     ):
         self.name = name
         self.hostname = hostname
